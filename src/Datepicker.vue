@@ -68,10 +68,20 @@
         </div>
       </div>
     </div>
+    <div>
+      <select v-model="hour">
+        <option value="00">00</option>
+        <option v-for="n in 23" :value="formatTime(n)">{{formatTime(n)}}</option>
+      </select>
+      <select v-model="minutes">
+        <option value="00">00</option>
+        <option v-for="n in 59" :value="formatTime(n)">{{formatTime(n)}}</option>
+      </select>
+    </div>
   </div>
 </template>
 
-<script>
+<script type="text/babel">
 import {translations} from './utils/utils.js'
 // import $ from './utils/NodeList.js'
 
@@ -95,7 +105,11 @@ export default {
       displayDayView: false,
       displayMonthView: false,
       displayYearView: false,
-      val: this.value
+      val: this.value,
+      time:{
+        hour: 0,
+        minutes: 0
+      }
     }
   },
   watch: {
@@ -110,6 +124,10 @@ export default {
     },
     value (val) {
       if (this.val !== val) { this.val = val }
+    },
+    hour(){
+      this.getDateRange()
+      console.log("Date: "+this.currDate)
     }
   },
   computed: {
@@ -183,6 +201,8 @@ export default {
         return false
       } else {
         this.currDate = day.date
+        this.currDate.setHours(15)
+        this.currDate.setMinutes(30)
         this.val = this.stringify(this.currDate)
         this.displayDayView = false
       }
@@ -226,11 +246,14 @@ export default {
       return date.getFullYear()
     },
     stringify (date, format = this.format) {
+      format = "yyyy-MM-dd hh:mm:ss"
       if (!date) date = this.parse()
       if (!date) return ''
       const year = date.getFullYear()
       const month = date.getMonth() + 1
       const day = date.getDate()
+      const hour = date.getHours()
+      const minutes = date.getMinutes()
       const monthName = this.parseMonth(date)
       return format
         .replace(/yyyy/g, year)
@@ -241,6 +264,10 @@ export default {
         .replace(/M(?!a)/g, month)
         .replace(/dd/g, ('0' + day).slice(-2))
         .replace(/d/g, day)
+        .replace(/hh/g, hour)
+        .replace(/mm/g, minutes)
+        .replace(/ss/g, "00")
+
     },
     parse (str) {
       if (str === undefined || str === null) { str = this.val }
@@ -319,6 +346,9 @@ export default {
           this.dateRange.push({text: i, date, sclass})
         }
       }
+    },
+    formatTime(time){
+      return time < 10 ? "0"+time.toString() : time.toString()
     }
   },
   mounted () {
