@@ -27,6 +27,18 @@
           </div>
         </div>
       </div>
+      <div class="timepicker">
+        <span class="time-icon glyphicon glyphicon-time"></span>
+        <select v-model="time.hour">
+          <option value=0>00</option>
+          <option v-for="n in 23" :value="n">{{formatTime(n)}}</option>
+        </select>
+        <span class="colon">&colon;</span>
+        <select v-model="time.minutes">
+          <option value=0>00</option>
+          <option v-for="n in 59" :value="n">{{formatTime(n)}}</option>
+        </select>
+      </div>
     </div>
     <div class="datepicker-popup" v-show="displayMonthView">
       <div class="datepicker-inner">
@@ -68,16 +80,7 @@
         </div>
       </div>
     </div>
-    <div>
-      <select v-model="hour">
-        <option value="00">00</option>
-        <option v-for="n in 23" :value="formatTime(n)">{{formatTime(n)}}</option>
-      </select>
-      <select v-model="minutes">
-        <option value="00">00</option>
-        <option v-for="n in 59" :value="formatTime(n)">{{formatTime(n)}}</option>
-      </select>
-    </div>
+
   </div>
 </template>
 
@@ -125,9 +128,13 @@ export default {
     value (val) {
       if (this.val !== val) { this.val = val }
     },
-    hour(){
-      this.getDateRange()
-      console.log("Date: "+this.currDate)
+    'time.hour'(hour){
+      this.currDate.setHours(hour)
+      this.val = this.stringify(this.currDate)
+    },
+    'time.minutes'(minutes){
+      this.currDate.setMinutes(minutes)
+      this.val = this.stringify(this.currDate)
     }
   },
   computed: {
@@ -201,8 +208,8 @@ export default {
         return false
       } else {
         this.currDate = day.date
-        this.currDate.setHours(15)
-        this.currDate.setMinutes(30)
+        this.currDate.setHours(this.time.hour)
+        this.currDate.setMinutes(this.time.minutes)
         this.val = this.stringify(this.currDate)
         this.displayDayView = false
       }
@@ -246,6 +253,7 @@ export default {
       return date.getFullYear()
     },
     stringify (date, format = this.format) {
+      // TODO: Fix format
       format = "yyyy-MM-dd hh:mm:ss"
       if (!date) date = this.parse()
       if (!date) return ''
@@ -264,8 +272,8 @@ export default {
         .replace(/M(?!a)/g, month)
         .replace(/dd/g, ('0' + day).slice(-2))
         .replace(/d/g, day)
-        .replace(/hh/g, hour)
-        .replace(/mm/g, minutes)
+        .replace(/hh/g, ('0' + hour).slice(-2))
+        .replace(/mm/g,('0' + minutes).slice(-2))
         .replace(/ss/g, "00")
 
     },
@@ -488,4 +496,36 @@ input.datepicker-input.with-reset-button {
 .datepicker-nextBtn {
   right: 2px;
 }
+
+.timepicker{
+  text-align: center;
+  padding: 5px 0 10px 0;
+}
+
+.timepicker .time-icon{
+  color: rgb(50, 118, 177);
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.timepicker .colon{
+  font-weight: bold;
+}
+
+.timepicker select{
+  padding: 3px 5px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
 </style>
