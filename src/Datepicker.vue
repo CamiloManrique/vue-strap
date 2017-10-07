@@ -100,7 +100,7 @@ export default {
     placeholder: {type: String},
     iconsFont: {type: String, default: 'glyphicon'},
     with_time: {default: false},
-    default_hour: {default: 23},
+    default_hour: {default: 0},
     default_minutes: {default: 0}
   },
   data () {
