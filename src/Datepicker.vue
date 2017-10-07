@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div class="timepicker">
+      <div v-if="with_time" class="timepicker">
         <span class="time-icon glyphicon glyphicon-time"></span>
         <select v-model="time.hour">
           <option value=0>00</option>
@@ -98,7 +98,10 @@ export default {
     lang: {type: String, default: navigator.language},
     name: {type: String},
     placeholder: {type: String},
-    iconsFont: {type: String, default: 'glyphicon'}
+    iconsFont: {type: String, default: 'glyphicon'},
+    with_time: {default: false},
+    default_hour: {default: 23},
+    default_minutes: {default: 0}
   },
   data () {
     return {
@@ -111,9 +114,14 @@ export default {
       val: this.value,
       time:{
         hour: 0,
-        minutes: 0
+        minutes: 0,
+        seconds: 0
       }
     }
+  },
+  created(){
+    this.time.hour = this.default_hour
+    this.time.minutes = this.default_minutes
   },
   watch: {
     currDate () {
