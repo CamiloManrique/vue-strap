@@ -101,7 +101,8 @@ export default {
     iconsFont: {type: String, default: 'glyphicon'},
     with_time: {default: false},
     default_hour: {default: 0},
-    default_minutes: {default: 0}
+    default_minutes: {default: 0},
+    default_seconds: {default: 0}
   },
   data () {
     return {
@@ -122,6 +123,7 @@ export default {
   created(){
     this.time.hour = this.default_hour
     this.time.minutes = this.default_minutes
+    this.time.seconds = this.default_seconds
   },
   watch: {
     currDate () {
