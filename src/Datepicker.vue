@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div v-if="with_time" class="timepicker">
+      <div v-if="withTime" class="timepicker">
         <span class="time-icon glyphicon glyphicon-time"></span>
         <select v-model="time.hour">
           <option value=0>00</option>
@@ -99,10 +99,11 @@ export default {
     name: {type: String},
     placeholder: {type: String},
     iconsFont: {type: String, default: 'glyphicon'},
-    with_time: {default: false},
-    default_hour: {default: 0},
-    default_minutes: {default: 0},
-    default_seconds: {default: 0}
+    withTime: {type: Boolean, default: false},
+    defaultTime:{
+      type: Object,
+      default() { return {hour: 0, minutes: 0, seconds: 0} }
+    }
   },
   data () {
     return {
@@ -121,9 +122,9 @@ export default {
     }
   },
   created(){
-    this.time.hour = this.default_hour
-    this.time.minutes = this.default_minutes
-    this.time.seconds = this.default_seconds
+    this.time.hour = this.defaultTime.hour || 0
+    this.time.minutes = this.defaultTime.minutes || 0
+    this.time.seconds = this.defaultTime.seconds || 0
   },
   watch: {
     currDate () {
@@ -218,8 +219,11 @@ export default {
         return false
       } else {
         this.currDate = day.date
-        this.currDate.setHours(this.time.hour)
-        this.currDate.setMinutes(this.time.minutes)
+        console.log(this.currDate)
+        if(this.withTime){
+            this.currDate.setHours(this.time.hour)
+            this.currDate.setMinutes(this.time.minutes)
+        }
         this.val = this.stringify(this.currDate)
         this.displayDayView = false
       }
@@ -264,7 +268,12 @@ export default {
     },
     stringify (date, format = this.format) {
       // TODO: Fix format
-      format = "yyyy-MM-dd hh:mm:ss"
+      if(this.withTime){
+          format = "yyyy-MM-dd hh:mm:ss"
+      }else{
+          format = "yyyy-MM-dd"
+      }
+
       if (!date) date = this.parse()
       if (!date) return ''
       const year = date.getFullYear()
@@ -273,6 +282,7 @@ export default {
       const hour = date.getHours()
       const minutes = date.getMinutes()
       const monthName = this.parseMonth(date)
+
       return format
         .replace(/yyyy/g, year)
         .replace(/yy/g, year)
